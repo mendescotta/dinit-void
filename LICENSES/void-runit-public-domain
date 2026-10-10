@@ -1,0 +1,4 @@
+void-runit (https://github.com/void-linux/void-runit) is in the public domain
+(its README; Void packages it as CC0-1.0). Files taken from it here: src/seedrng.c,
+src/halt.c, misc/crypt.awk, misc/modules-load, and the boot and shutdown steps ported into
+scripts/ (each says which void-runit file it comes from).
