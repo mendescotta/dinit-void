@@ -1,0 +1,43 @@
+#!/bin/sh
+# dmraid, mdadm, btrfs, LVM, crypttab (Void's crypt.awk), ZFS. From void-runit
+# core-services/03-filesystems.sh; runs on the console for passphrase prompts.
+. /usr/lib/dinit/functions
+[ -n "$IS_CONTAINER" ] && exit 0
+if [ -x /sbin/dmraid ] || [ -x /bin/dmraid ]; then
+	msg "Activating dmraid devices..."
+	dmraid -i -ay
+fi
+if [ -x /bin/mdadm ]; then
+	msg "Activating software RAID arrays..."
+	mdadm -As
+fi
+if [ -x /bin/btrfs ]; then
+	msg "Activating btrfs devices..."
+	btrfs device scan || fail "btrfs device scan"
+fi
+if [ -x /sbin/vgchange ] || [ -x /bin/vgchange ]; then
+	msg "Activating LVM devices..."
+	vgchange --sysinit -a ay || fail "vgchange"
+fi
+if [ -e /etc/crypttab ]; then
+	msg "Activating encrypted devices..."
+	awk -f /usr/lib/dinit/crypt.awk /etc/crypttab
+	if [ -x /sbin/vgchange ] || [ -x /bin/vgchange ]; then
+		msg "Activating LVM devices for dm-crypt..."
+		vgchange --sysinit -a ay || fail "vgchange"
+	fi
+fi
+if [ -x /usr/bin/zpool ] && [ -x /usr/bin/zfs ]; then
+	if [ -e /etc/zfs/zpool.cache ]; then
+		msg "Importing cached ZFS pools..."
+		zpool import -N -a -c /etc/zfs/zpool.cache
+	else
+		msg "Scanning for and importing ZFS pools..."
+		zpool import -N -a -o cachefile=none
+	fi
+	msg "Mounting ZFS file systems..."
+	zfs mount -a -l
+	msg "Sharing ZFS file systems..."
+	zfs share -a
+fi
+exit 0

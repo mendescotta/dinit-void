@@ -1,0 +1,5 @@
+# Coldplug: replay add events for existing devices
+type = scripted
+command = /usr/lib/dinit/udev trigger
+restart = false
+depends-on: udevd

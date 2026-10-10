@@ -1,0 +1,18 @@
+#!/bin/sh
+# Filesystem checks, root included while it is read-only. From void-runit
+# core-services/03-filesystems.sh: /fastboot or `fastboot` skips, /forcefsck or `forcefsck` forces.
+. /usr/lib/dinit/functions
+{ [ -n "$IS_CONTAINER" ] || root_is_live; } && exit 0
+[ -f /fastboot ] && FASTBOOT=1
+[ -f /forcefsck ] && FORCEFSCK="-f"
+for arg in $(cat /proc/cmdline); do
+	case $arg in
+	fastboot) FASTBOOT=1 ;;
+	forcefsck) FORCEFSCK="-f" ;;
+	esac
+done
+[ -n "$FASTBOOT" ] && exit 0
+msg "Checking filesystems:"
+fsck -A -T -a -t noopts=_netdev $FORCEFSCK
+[ $? -gt 1 ] && fail "filesystem check"
+exit 0

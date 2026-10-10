@@ -1,0 +1,10 @@
+#!/bin/sh
+# System clock from the RTC per HARDWARECLOCK in /etc/rc.conf. From void-runit
+# core-services/03-console-setup.sh; the clock is saved again by the shutdown hook.
+. /usr/lib/dinit/functions
+[ -n "$IS_CONTAINER" ] && exit 0
+if [ -n "$HARDWARECLOCK" ]; then
+	msg "Setting up RTC to '$HARDWARECLOCK'..."
+	TZ=$TIMEZONE hwclock --systz --$(echo "$HARDWARECLOCK" | tr A-Z a-z) --noadjfile || fail "hwclock"
+fi
+exit 0

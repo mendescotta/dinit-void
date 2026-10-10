@@ -1,0 +1,3 @@
+# Network daemons (dhcpcd, NetworkManager, wpa_supplicant) depend on this and run before network.target
+type = internal
+depends-on: rcboot

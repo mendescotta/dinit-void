@@ -1,0 +1,54 @@
+#!/bin/sh
+# Pseudo-filesystems and cgroups. From void-runit core-services/00-pseudofs.sh.
+. /usr/lib/dinit/functions
+
+msg "Mounting pseudo-filesystems..."
+mountpoint -q /proc || mount -o nosuid,noexec,nodev -t proc proc /proc
+mountpoint -q /sys || mount -o nosuid,noexec,nodev -t sysfs sys /sys
+mountpoint -q /run || mount -o mode=0755,nosuid,nodev -t tmpfs run /run
+mountpoint -q /dev || mount -o mode=0755,nosuid -t devtmpfs dev /dev
+mkdir -p -m0755 /run/lvm /run/user /run/lock /run/log /dev/pts /dev/shm
+mountpoint -q /dev/pts || mount -o mode=0620,gid=5,nosuid,noexec -n -t devpts devpts /dev/pts
+mountpoint -q /dev/shm || mount -o mode=1777,nosuid,nodev -n -t tmpfs shm /dev/shm
+mountpoint -q /sys/kernel/security || mount -n -t securityfs securityfs /sys/kernel/security
+
+if [ -d /sys/firmware/efi/efivars ]; then
+	mountpoint -q /sys/firmware/efi/efivars ||
+		mount -o nosuid,noexec,nodev -t efivarfs efivarfs /sys/firmware/efi/efivars
+fi
+
+_cgroupv1="" _cgroupv2=""
+if [ -z "$IS_CONTAINER" ]; then
+	case "${CGROUP_MODE:-unified}" in
+	legacy) _cgroupv1=/sys/fs/cgroup ;;
+	hybrid) _cgroupv1=/sys/fs/cgroup _cgroupv2=/sys/fs/cgroup/unified ;;
+	unified) _cgroupv2=/sys/fs/cgroup ;;
+	esac
+elif [ "${CGROUP_MODE:-unified}" = unified ]; then
+	_cgroupv2=/sys/fs/cgroup
+fi
+
+if [ -n "$_cgroupv1" ]; then
+	mountpoint -q "$_cgroupv1" || mount -o mode=0755 -t tmpfs cgroup "$_cgroupv1"
+	while read -r _subsys_name _hierarchy _num_cgroups _enabled; do
+		[ "$_enabled" = 1 ] || continue
+		_controller="$_cgroupv1/$_subsys_name"
+		mkdir -p "$_controller"
+		mountpoint -q "$_controller" || mount -t cgroup -o "$_subsys_name" cgroup "$_controller"
+	done < /proc/cgroups
+	mkdir -p /sys/fs/cgroup/systemd
+	mountpoint -q /sys/fs/cgroup/systemd || mount -t cgroup -o none,name=systemd cgroup /sys/fs/cgroup/systemd
+fi
+if [ -n "$_cgroupv2" ]; then
+	mkdir -p "$_cgroupv2"
+	mountpoint -q "$_cgroupv2" || mount -t cgroup2 -o nsdelegate cgroup2 "$_cgroupv2" || [ -n "$IS_CONTAINER" ]
+	# hand every available controller to child groups (dinit and elogind put services and sessions
+	# in their own cgroups); from Chimera's cgroups setup (BSD-2-Clause, q66)
+	if [ -z "$IS_CONTAINER" ] && [ -r "$_cgroupv2/cgroup.controllers" ]; then
+		_active=
+		read -r _controllers < "$_cgroupv2/cgroup.controllers" || :
+		for _c in $_controllers; do _active="$_active +$_c"; done
+		[ -z "$_active" ] || printf '%s' "$_active" > "$_cgroupv2/cgroup.subtree_control" 2>/dev/null || :
+	fi
+fi
+exit 0

@@ -1,0 +1,5 @@
+# Pseudo-filesystems and cgroups
+type = scripted
+command = /usr/lib/dinit/pseudofs
+restart = false
+options = starts-rwfs

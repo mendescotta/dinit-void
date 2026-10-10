@@ -1,0 +1,22 @@
+#!/bin/sh
+# udevd and the coldplug. From void-runit core-services/02-udev.sh, split in steps: eudev cannot
+# tell dinit when its socket is ready, so udevd runs as a scripted service (as in dinit's own
+# example boot) and is stopped with `udevadm control --exit`.
+. /usr/lib/dinit/functions
+[ -n "$IS_CONTAINER" ] && exit 0
+case "$1" in
+start)
+	msg "Starting udev..."
+	exec udevd --daemon
+	;;
+stop) udevadm control --exit || : ;;
+trigger)
+	udevadm trigger --action=add --type=subsystems
+	exec udevadm trigger --action=add --type=devices
+	;;
+settle)
+	msg "Waiting for devices to settle..."
+	exec udevadm settle
+	;;
+esac
+exit 0

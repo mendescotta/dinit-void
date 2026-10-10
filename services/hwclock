@@ -1,0 +1,6 @@
+# System clock from the RTC (/etc/rc.conf HARDWARECLOCK, TIMEZONE)
+type = scripted
+command = /usr/lib/dinit/hwclock
+restart = false
+depends-on: pseudofs
+waits-for: udev-settle

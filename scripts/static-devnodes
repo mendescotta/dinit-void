@@ -1,0 +1,7 @@
+#!/bin/sh
+# Modules behind static device nodes. From void-runit core-services/01-static-devnodes.sh.
+. /usr/lib/dinit/functions
+for f in $(kmod static-nodes -f devname 2>/dev/null | cut -d' ' -f1); do
+	modprobe -bq "$f" 2>/dev/null
+done
+exit 0

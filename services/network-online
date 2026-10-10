@@ -1,0 +1,6 @@
+# Waits until the interfaces have carrier and are up (INTERFACES, PINGTEST, PINGHOST in /etc/rc.conf)
+type = scripted
+command = /usr/lib/dinit/network-online
+restart = false
+start-timeout = 60
+depends-on: network.target

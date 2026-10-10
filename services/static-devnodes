@@ -1,0 +1,5 @@
+# Modules behind static device nodes
+type = scripted
+command = /usr/lib/dinit/static-devnodes
+restart = false
+depends-on: pseudofs

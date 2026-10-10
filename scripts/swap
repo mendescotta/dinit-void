@@ -1,0 +1,6 @@
+#!/bin/sh
+# From void-runit core-services/04-swap.sh.
+. /usr/lib/dinit/functions
+[ -n "$IS_CONTAINER" ] && exit 0
+msg "Initializing swap..."
+swapon -a || fail "swapon -a"

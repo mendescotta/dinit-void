@@ -1,0 +1,6 @@
+# Single-user mode (kernel option "single"): a root shell; on exit, boot resumes
+type = process
+command = /usr/bin/sulogin
+options = shares-console
+restart = false
+chain-to = boot

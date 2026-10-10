@@ -1,0 +1,7 @@
+# Root read-write
+type = scripted
+command = /usr/lib/dinit/root-rw
+restart = false
+options = starts-rwfs
+depends-on: root-ro
+depends-on: fsck

@@ -1,0 +1,6 @@
+#!/bin/sh
+# Root read-only for the checks. From void-runit core-services/03-filesystems.sh.
+. /usr/lib/dinit/functions
+{ [ -n "$IS_CONTAINER" ] || root_is_live; } && exit 0
+msg "Remounting rootfs read-only..."
+LIBMOUNT_FORCE_MOUNT2=always mount -o remount,ro / || fail "cannot remount / read-only"

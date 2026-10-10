@@ -1,0 +1,6 @@
+# Wait for the coldplug to finish
+type = scripted
+command = /usr/lib/dinit/udev settle
+restart = false
+depends-on: udevd
+depends-on: udev-trigger

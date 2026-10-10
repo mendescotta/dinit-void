@@ -1,0 +1,6 @@
+#!/bin/sh
+# End of early boot: /etc/rc.local, as void-runit's stage 2 runs it before any service.
+. /usr/lib/dinit/functions
+[ -x /etc/rc.local ] && /etc/rc.local
+msg "Initialization complete."
+exit 0

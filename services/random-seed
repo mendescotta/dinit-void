@@ -1,0 +1,6 @@
+# Seed the kernel RNG (a new seed is saved at shutdown)
+type = scripted
+command = /usr/lib/dinit/random-seed
+restart = false
+depends-on: filesystems
+waits-for: modules

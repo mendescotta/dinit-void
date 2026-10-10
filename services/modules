@@ -1,0 +1,6 @@
+# /etc/modules-load.d
+type = scripted
+command = /usr/lib/dinit/modules
+restart = false
+depends-on: pseudofs
+waits-for: static-devnodes

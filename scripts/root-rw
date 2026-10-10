@@ -1,0 +1,6 @@
+#!/bin/sh
+# Root read-write. From void-runit core-services/03-filesystems.sh.
+. /usr/lib/dinit/functions
+{ [ -n "$IS_CONTAINER" ] || root_is_live; } && exit 0
+msg "Mounting rootfs read-write..."
+LIBMOUNT_FORCE_MOUNT2=always mount -o remount,rw / || fail "cannot remount / read-write"

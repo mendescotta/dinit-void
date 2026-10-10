@@ -1,0 +1,6 @@
+# TTY font and keymap (/etc/rc.conf FONT, KEYMAP)
+type = scripted
+command = /usr/lib/dinit/console
+restart = false
+depends-on: pseudofs
+waits-for: udev-settle

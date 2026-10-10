@@ -1,0 +1,5 @@
+# Root read-only for the checks
+type = scripted
+command = /usr/lib/dinit/root-ro
+restart = false
+depends-on: pseudofs

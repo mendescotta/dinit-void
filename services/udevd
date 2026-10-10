@@ -1,0 +1,8 @@
+# eudev; scripted because eudev cannot report readiness (see dinit's example boot)
+type = scripted
+command = /usr/lib/dinit/udev start
+stop-command = /usr/lib/dinit/udev stop
+restart = false
+depends-on: pseudofs
+waits-for: static-devnodes
+waits-for: modules

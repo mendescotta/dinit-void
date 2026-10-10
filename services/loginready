@@ -1,0 +1,4 @@
+# Before logins: display managers and gettys depend on this
+type = internal
+options = runs-on-console
+depends-on: rcboot

@@ -1,0 +1,38 @@
+#!/bin/sh
+# dmesg log, the /usr/sbin merge, wtmp/btmp and leftovers of the previous boot. From void-runit
+# core-services/97-dmesg.sh, 98-sbin-merge.sh and 99-cleanup.sh.
+. /usr/lib/dinit/functions
+dmesg > /var/log/dmesg.log
+if [ "$(sysctl -n kernel.dmesg_restrict 2>/dev/null)" = 1 ]; then
+	chmod 0600 /var/log/dmesg.log
+else
+	chmod 0644 /var/log/dmesg.log
+fi
+
+if [ -d /usr/sbin ] && [ ! -L /usr/sbin ]; then
+	_merge=1
+	for f in /usr/sbin/*; do
+		if [ -f "$f" ] && [ ! -L "$f" ]; then
+			msg "Detected $f file, can't create /usr/sbin symlink."
+			_merge=
+			break
+		fi
+	done
+	if [ -n "$_merge" ]; then
+		msg "Creating /usr/sbin -> /usr/bin symlink, moving existing to /usr/sbin.old"
+		mv /usr/sbin /usr/sbin.old
+		ln -sf bin /usr/sbin
+	fi
+fi
+if [ ! -e /var/log/wtmp ]; then
+	install -m0664 -o root -g utmp /dev/null /var/log/wtmp
+fi
+if [ ! -e /var/log/btmp ]; then
+	install -m0600 -o root -g utmp /dev/null /var/log/btmp
+fi
+if [ ! -e /var/log/lastlog ]; then
+	install -m0600 -o root -g utmp /dev/null /var/log/lastlog
+fi
+install -dm1777 /tmp/.X11-unix /tmp/.ICE-unix
+rm -f /etc/nologin /forcefsck /forcequotacheck /fastboot
+exit 0

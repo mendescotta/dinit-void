@@ -1,0 +1,5 @@
+# dmesg log, /usr/sbin merge, wtmp/btmp, leftovers
+type = scripted
+command = /usr/lib/dinit/cleanup
+restart = false
+depends-on: filesystems

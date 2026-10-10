@@ -1,0 +1,5 @@
+# Offered by dinit when boot fails: sulogin, then a root shell
+type = process
+command = /usr/bin/sulogin
+options = runs-on-console
+restart = false

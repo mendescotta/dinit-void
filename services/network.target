@@ -1,0 +1,3 @@
+# Reached once the network daemons are up (not necessarily connected); see network-online
+type = internal
+depends-on: pre-network.target

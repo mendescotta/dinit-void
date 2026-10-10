@@ -1,0 +1,5 @@
+# swapon -a
+type = scripted
+command = /usr/lib/dinit/swap
+restart = false
+depends-on: filesystems

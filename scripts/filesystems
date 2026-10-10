@@ -1,0 +1,6 @@
+#!/bin/sh
+# fstab, network filesystems excepted. From void-runit core-services/03-filesystems.sh.
+. /usr/lib/dinit/functions
+[ -n "$IS_CONTAINER" ] && exit 0
+msg "Mounting all non-network filesystems..."
+mount -a -t "nosysfs,nonfs,nonfs4,nosmbfs,nocifs" -O no_netdev || fail "mount -a"

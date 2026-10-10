@@ -1,0 +1,9 @@
+#!/bin/sh
+# modules-load.d. From void-runit core-services/02-kmods.sh.
+. /usr/lib/dinit/functions
+[ -n "$IS_CONTAINER" ] && exit 0
+[ -e /proc/modules ] || exit 0
+msg "Loading kernel modules..."
+/usr/lib/dinit/modules-load -v | tr '\n' ' ' | sed 's:insmod [^ ]*/::g; s:\.ko\(\.gz\)\? ::g'
+echo
+exit 0

@@ -1,0 +1,8 @@
+# RAID, btrfs, LVM, crypttab, ZFS; on the console for passphrases
+type = scripted
+command = /usr/lib/dinit/storage
+restart = false
+options = starts-on-console
+start-timeout = 0
+depends-on: root-ro
+depends-on: udev-settle

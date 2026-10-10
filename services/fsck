@@ -1,0 +1,8 @@
+# Filesystem checks; ^C skips
+type = scripted
+command = /usr/lib/dinit/fsck
+restart = false
+options = starts-on-console start-interruptible unmask-intr skippable
+start-timeout = 0
+depends-on: storage
+waits-for: hwclock

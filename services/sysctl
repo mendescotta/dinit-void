@@ -1,0 +1,6 @@
+# sysctl.d and /etc/sysctl.conf
+type = scripted
+command = /usr/lib/dinit/sysctl
+restart = false
+depends-on: filesystems
+waits-for: modules

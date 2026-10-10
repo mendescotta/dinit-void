@@ -1,0 +1,13 @@
+# End of early boot: every step above, then /etc/rc.local. Daemons depend on this.
+type = scripted
+command = /usr/lib/dinit/rcboot
+restart = false
+depends-on: filesystems
+depends-on: misc
+depends-on: cleanup
+waits-for: swap
+waits-for: console
+waits-for: hwclock
+waits-for: random-seed
+waits-for: sysctl
+waits-for: udev-settle

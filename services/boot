@@ -1,0 +1,6 @@
+# The primary service. Enable services by linking them into /etc/dinit.d/boot.d.
+type = internal
+depends-on: rcboot
+waits-for: loginready
+waits-for: network.target
+waits-for.d: /etc/dinit.d/boot.d

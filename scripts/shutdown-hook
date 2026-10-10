@@ -1,0 +1,44 @@
+#!/bin/sh
+# Run by dinit-shutdown after every service is stopped and every process got TERM and KILL. It
+# owns unmounting (dinit only unmounts by itself when this hook fails). The steps and their order
+# are void-runit's shutdown.d (public domain), minus stopping services and pkill, which dinit did.
+. /usr/lib/dinit/functions
+
+[ -x /etc/rc.shutdown ] && /etc/rc.shutdown
+
+if [ -z "$IS_CONTAINER" ]; then
+	msg "Saving random number generator seed..."
+	/usr/lib/dinit/seedrng
+	[ -n "$HARDWARECLOCK" ] && hwclock --systohc --$(echo "$HARDWARECLOCK" | tr A-Z a-z)
+fi
+
+/usr/lib/dinit/halt -w # wtmp shutdown record
+
+if [ -z "$IS_CONTAINER" ]; then
+	udevadm control --exit 2>/dev/null
+	msg "Unmounting filesystems, disabling swap..."
+	swapoff -a
+	umount -r -a -t nosysfs,noproc,nodevtmpfs,notmpfs
+	msg "Remounting rootfs read-only..."
+	LIBMOUNT_FORCE_MOUNT2=always mount -o remount,ro /
+fi
+sync
+
+if [ -z "$IS_CONTAINER" ]; then
+	if command -v vgchange >/dev/null && [ "$(vgs 2>/dev/null | wc -l)" -gt 0 ]; then
+		msg "Deactivating LVM Volume Groups..."
+		vgchange -an
+	fi
+	if command -v dmsetup >/dev/null; then
+		for v in $(dmsetup ls --target crypt --exec "dmsetup info -c --noheadings -o open,name" 2>/dev/null); do
+			[ "${v%%:*}" = 0 ] && cryptsetup close "${v##*:}" && msg "[crypt] closed: ${v##*:}"
+		done
+		command -v vgchange >/dev/null && [ "$(vgs 2>/dev/null | wc -l)" -gt 0 ] && vgchange -an
+	fi
+	# a live system booted from an optical disc ejects it last (nothing reads it after this)
+	live_src=$(findmnt -n -o SOURCE /run/initramfs/live 2>/dev/null)
+	case "$live_src" in
+	/dev/sr* | /dev/scd*) eject -s -m "$live_src" >/dev/null 2>&1 ;;
+	esac
+fi
+exit 0

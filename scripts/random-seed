@@ -1,0 +1,8 @@
+#!/bin/sh
+# Seed the kernel RNG at boot, save a new seed at shutdown. From void-runit
+# core-services/05-misc.sh and shutdown.d/30-seedrng.sh.
+. /usr/lib/dinit/functions
+[ -n "$IS_CONTAINER" ] && exit 0
+msg "Seeding random number generator..."
+/usr/lib/dinit/seedrng || :
+exit 0
