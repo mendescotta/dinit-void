@@ -2,5 +2,6 @@
 type = scripted
 command = /usr/lib/dinit/network-online
 restart = false
+log-type = buffer
 start-timeout = 60
 depends-on: network.target

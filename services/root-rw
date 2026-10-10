@@ -2,6 +2,7 @@
 type = scripted
 command = /usr/lib/dinit/root-rw
 restart = false
+log-type = buffer
 options = starts-rwfs
 depends-on: root-ro
 depends-on: fsck

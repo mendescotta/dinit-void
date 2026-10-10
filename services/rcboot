@@ -2,6 +2,7 @@
 type = scripted
 command = /usr/lib/dinit/rcboot
 restart = false
+log-type = buffer
 depends-on: filesystems
 depends-on: misc
 depends-on: cleanup

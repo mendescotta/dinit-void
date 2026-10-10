@@ -2,4 +2,5 @@
 type = scripted
 command = /usr/lib/dinit/pseudofs
 restart = false
+log-type = buffer
 options = starts-rwfs

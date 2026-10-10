@@ -2,5 +2,6 @@
 type = scripted
 command = /usr/lib/dinit/sysctl
 restart = false
+log-type = buffer
 depends-on: filesystems
 waits-for: modules

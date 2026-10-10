@@ -1,0 +1,80 @@
+#!/bin/sh
+# shutdown(8) lookalike for dinit, ported from void-runit's shutdown (public domain): the same
+# options, time forms and warnings, so callers written for Void keep working (acpid's handler runs
+# `shutdown -P now`; dinit's own shutdown only knows -r/-h/-p/-s/-k).
+
+PIDFILE=/run/dinit-shutdown.pid
+
+abort() {
+	printf '%s\n' "$1" >&2
+	exit 1
+}
+
+usage() {
+	abort "Usage: ${0##*/} [-fF] [-kchPr] time [warning message]"
+}
+
+# runit-void's halt powers off as well
+halt() { exec /usr/bin/dinit-shutdown -p; }
+reboot() { exec /usr/bin/dinit-shutdown -r; }
+single() { abort "single-user mode is not available from shutdown on dinit; use -h, -P or -r"; }
+
+action=single
+
+while getopts akrhPHfFnct: opt; do
+	case "$opt" in
+	a | n | H) abort "'-$opt' is not implemented" ;;
+	t) ;;
+	f) touch /fastboot ;;
+	F) touch /forcefsck ;;
+	k) action=true ;;
+	c) action=cancel ;;
+	h | P) action=halt ;;
+	r) action=reboot ;;
+	[?]) usage ;;
+	esac
+done
+shift $((OPTIND - 1))
+
+[ $# -eq 0 ] && [ "$action" != cancel ] && usage
+
+time=$1
+[ $# -gt 0 ] && shift
+message="${*:-system is going down}"
+
+if [ "$action" = cancel ]; then
+	[ -r "$PIDFILE" ] && kill "$(cat "$PIDFILE")"
+	if [ -e /etc/nologin ] && ! [ -s /etc/nologin ]; then
+		rm /etc/nologin
+	fi
+	echo "${*:-shutdown cancelled}" | wall
+	exit
+fi
+[ "$action" = single ] && single
+
+touch "$PIDFILE" 2>/dev/null || abort "Not enough permissions to execute ${0##*/}"
+echo $$ > "$PIDFILE"
+
+case "$time" in
+now) time=0 ;;
++*) time=${time#+} ;;
+*:*) abort "absolute time is not implemented" ;;
+*) abort "invalid time" ;;
+esac
+
+for break in 5 0; do
+	[ "$time" -gt "$break" ] || continue
+	[ "$break" = 0 ] && touch /etc/nologin
+
+	printf '%s in %s minutes\n' "$message" "$time" | wall
+	printf 'shutdown: sleeping for %s minutes... ' "$((time - break))"
+	sleep $(((time - break) * 60))
+	time="$break"
+	printf '\n'
+
+	[ "$break" = 0 ] && rm /etc/nologin
+done
+
+printf '%s NOW\n' "$message" | wall
+
+$action

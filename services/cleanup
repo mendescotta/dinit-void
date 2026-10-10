@@ -2,4 +2,5 @@
 type = scripted
 command = /usr/lib/dinit/cleanup
 restart = false
+log-type = buffer
 depends-on: filesystems

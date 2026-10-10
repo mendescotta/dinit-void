@@ -2,4 +2,5 @@
 type = scripted
 command = /usr/lib/dinit/udev trigger
 restart = false
+log-type = buffer
 depends-on: udevd

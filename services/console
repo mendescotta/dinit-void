@@ -2,5 +2,6 @@
 type = scripted
 command = /usr/lib/dinit/console
 restart = false
+log-type = buffer
 depends-on: pseudofs
 waits-for: udev-settle

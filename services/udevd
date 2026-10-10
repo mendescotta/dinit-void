@@ -3,6 +3,7 @@ type = scripted
 command = /usr/lib/dinit/udev start
 stop-command = /usr/lib/dinit/udev stop
 restart = false
+log-type = buffer
 depends-on: pseudofs
 waits-for: static-devnodes
 waits-for: modules

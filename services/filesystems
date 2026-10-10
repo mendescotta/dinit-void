@@ -2,6 +2,7 @@
 type = scripted
 command = /usr/lib/dinit/filesystems
 restart = false
+log-type = buffer
 start-timeout = 1200
 depends-on: root-rw
 depends-on: storage

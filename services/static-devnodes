@@ -2,4 +2,5 @@
 type = scripted
 command = /usr/lib/dinit/static-devnodes
 restart = false
+log-type = buffer
 depends-on: pseudofs
