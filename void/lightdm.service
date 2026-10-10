@@ -1,0 +1,8 @@
+# lightdm display manager
+type = process
+log-type = buffer
+command = /usr/libexec/dinit-dm lightdm /usr/bin/lightdm
+smooth-recovery = true
+depends-on: dbus
+depends-on: elogind
+depends-on: loginready

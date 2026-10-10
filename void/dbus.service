@@ -1,0 +1,8 @@
+# D-Bus system message bus
+type = process
+log-type = buffer
+command = /usr/libexec/dinit-dbus
+ready-notification = pipefd:3
+smooth-recovery = true
+depends-on: rcboot
+before: loginready
