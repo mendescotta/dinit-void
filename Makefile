@@ -11,7 +11,7 @@ STAGE1 = pseudofs static-devnodes modules udevd udev-trigger udev-settle console
 	root-ro storage fsck root-rw filesystems swap misc random-seed sysctl cleanup rcboot \
 	pre-network.target network.target network-online loginready boot recovery single
 SCRIPTS = pseudofs static-devnodes modules udev console hwclock root-ro storage fsck root-rw \
-	filesystems swap misc random-seed sysctl cleanup rcboot network-online shutdown-hook shutdown
+	filesystems swap misc random-seed sysctl cleanup rcboot network-online shutdown-hook shutdown power
 DAEMONS = dhcpcd sshd ssh-keygen dbus elogind polkitd NetworkManager lightdm gdm sddm \
 	cosmic-greeter-daemon cosmic-greeter chronyd vmtoolsd vmware-vmblock-fuse vboxservice \
 	spice-vdagentd power-profiles-daemon switcheroo-control wpa_supplicant acpid bluetoothd rtkit
@@ -45,7 +45,7 @@ install-init:
 	install -d $(DESTDIR)/usr/bin
 	ln -sf dinit $(DESTDIR)/usr/bin/init
 	ln -sf ../lib/dinit/shutdown $(DESTDIR)/usr/bin/shutdown
-	for c in halt poweroff reboot soft-reboot; do ln -sf dinit-$$c $(DESTDIR)/usr/bin/$$c; done
+	for c in halt poweroff reboot soft-reboot; do ln -sf ../lib/dinit/power $(DESTDIR)/usr/bin/$$c; done
 
 # dinit-void-core: boot dinit from a second entry on a root where runit-void owns them
 install-alongside:

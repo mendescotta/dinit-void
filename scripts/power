@@ -1,0 +1,12 @@
+#!/bin/sh
+# halt, poweroff, reboot and soft-reboot for dinit. Void's dinit is built with the dinit- prefix, and
+# dinit-shutdown only reboots when it is called by that exact name (dinit-reboot); called as
+# "reboot" through a symlink it powers off. So pass the action explicitly instead.
+case "${0##*/}" in
+halt) exec /usr/bin/dinit-shutdown -h "$@" ;;
+poweroff) exec /usr/bin/dinit-shutdown -p "$@" ;;
+reboot) exec /usr/bin/dinit-shutdown -r "$@" ;;
+soft-reboot) exec /usr/bin/dinit-shutdown -s "$@" ;;
+esac
+echo "${0##*/}: unknown name" >&2
+exit 1
