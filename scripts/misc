@@ -1,5 +1,5 @@
 #!/bin/sh
-# utmp, the boot wtmp record, loopback, hostname, timezone. From void-runit core-services/05-misc.sh.
+# utmp, the boot wtmp record, machine-id, loopback, hostname, timezone. From void-runit core-services/05-misc.sh.
 . /usr/lib/dinit/functions
 install -m0664 -o root -g utmp /dev/null /run/utmp
 /usr/lib/dinit/halt -B # wtmp boot record
@@ -11,6 +11,16 @@ if [ -n "$HOSTNAME" ]; then
 	printf '%s' "$HOSTNAME" > /proc/sys/kernel/hostname
 else
 	msg_warn "Didn't setup a hostname!"
+fi
+# Void only has dbus's /var/lib/dbus/machine-id; elogind, accountsservice and GNOME read
+# /etc/machine-id (systemd-machine-id-setup's job elsewhere). Reuse dbus's id so both agree.
+if [ ! -s /etc/machine-id ]; then
+	if [ -s /var/lib/dbus/machine-id ]; then
+		cp /var/lib/dbus/machine-id /etc/machine-id
+	else
+		tr -d '-' < /proc/sys/kernel/random/uuid > /etc/machine-id
+	fi
+	chmod 0444 /etc/machine-id
 fi
 if [ -n "$TIMEZONE" ]; then
 	msg "Setting up timezone to '$TIMEZONE'..."

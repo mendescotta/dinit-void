@@ -16,7 +16,7 @@ Each step is a dinit service (`/usr/lib/dinit.d`) running a short script (`/usr/
 ```
 pseudofs ─ static-devnodes ─ modules ─ udevd ─ udev-trigger ─ udev-settle ─ console, hwclock
 root-ro ─ storage (RAID, btrfs, LVM, crypttab, ZFS) ─ fsck ─ root-rw ─ filesystems
-filesystems ─ swap, misc (utmp, hostname, loopback, timezone), random-seed, sysctl, cleanup
+filesystems ─ swap, misc (utmp, machine-id, hostname, loopback, timezone), random-seed, sysctl, cleanup
 rcboot (all of the above, then /etc/rc.local)
 ├─ pre-network.target ─ network.target ─ network-online
 └─ loginready (gettys, display managers)

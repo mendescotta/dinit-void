@@ -1,4 +1,4 @@
-# utmp, boot wtmp record, loopback, hostname, timezone
+# utmp, boot wtmp record, machine-id, loopback, hostname, timezone
 type = scripted
 command = /usr/lib/dinit/misc
 restart = false
