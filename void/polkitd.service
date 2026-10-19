@@ -1,7 +1,9 @@
-# PolicyKit authorization daemon
+# PolicyKit authorization daemon. Early clients D-Bus-activate a polkitd before this one
+# starts; --replace takes the name over so dinit owns the running daemon.
 type = process
 log-type = buffer
-command = /usr/libexec/dbus-wait-for -s -f 3 -n org.freedesktop.PolicyKit1 /usr/lib/polkit-1/polkitd --no-debug
+command = /usr/libexec/dbus-wait-for -s -f 3 -n org.freedesktop.PolicyKit1 /usr/lib/polkit-1/polkitd --no-debug --replace
 ready-notification = pipefd:3
 smooth-recovery = true
 depends-on: dbus
+before: loginready
