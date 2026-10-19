@@ -30,6 +30,7 @@ dbus-wait-for: src/dbus-wait-for.c
 # what both packages ship: early boot, the shutdown hook, the daemon services and their helpers
 install: all
 	install -d $(DESTDIR)$(DINITLIB) $(DESTDIR)$(DINITSRV) $(DESTDIR)$(DINITETC)/boot.d $(DESTDIR)$(LIBEXEC)
+	install -d $(DESTDIR)$(DINITSRV)/user/boot.d
 	install -m644 scripts/functions misc/crypt.awk $(DESTDIR)$(DINITLIB)/
 	for s in $(SCRIPTS); do install -m755 scripts/$$s $(DESTDIR)$(DINITLIB)/$$s; done
 	install -m755 misc/modules-load seedrng halt $(DESTDIR)$(DINITLIB)/

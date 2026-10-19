@@ -2,3 +2,4 @@ type = process
 command = /usr/bin/turnstiled
 log-type = buffer
 depends-on: elogind
+before: loginready
