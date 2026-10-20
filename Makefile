@@ -14,7 +14,7 @@ SCRIPTS = pseudofs static-devnodes modules udev console hwclock root-ro storage 
 	filesystems swap misc random-seed sysctl cleanup rcboot network-online shutdown-hook shutdown power
 DAEMONS = dhcpcd sshd ssh-keygen dbus elogind polkitd NetworkManager lightdm gdm sddm \
 	cosmic-greeter-daemon cosmic-greeter chronyd vmtoolsd vmware-vmblock-fuse vboxservice \
-	spice-vdagentd power-profiles-daemon switcheroo-control wpa_supplicant acpid bluetoothd rtkit turnstiled upower
+	spice-vdagentd power-profiles-daemon switcheroo-control wpa_supplicant acpid bluetoothd rtkit upower
 TTYS = tty1 tty2 tty3 tty4 tty5 tty6 ttyS0
 PROGS = seedrng halt dbus-wait-for
 

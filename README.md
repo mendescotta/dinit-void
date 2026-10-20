@@ -26,8 +26,10 @@ boot = rcboot + loginready + network.target + everything linked in /etc/dinit.d/
 A failing step makes dinit offer `recovery` (`sulogin`). Enable a service with
 `ln -s ../<name> /etc/dinit.d/boot.d/`. Daemon services in `/etc/dinit.d` depend on `rcboot`; network
 daemons on `pre-network.target`, before `network.target`; display managers on `loginready`.
-`turnstiled` starts before `loginready`, so it accepts PAM sessions before GDM or a getty logs
-anyone in; user services linked in `/usr/lib/dinit.d/user/boot.d` start with each user's dinit.
+Void's `turnstile` package owns `/etc/dinit.d/turnstiled`, written for Chimera's `local.target` and
+`login.target`; images that use it replace it with one that depends on `elogind` and starts before
+`loginready`, so it accepts PAM sessions before GDM or a getty logs anyone in. User services linked
+in `/usr/lib/dinit.d/user/boot.d` start with each user's dinit.
 
 At shutdown dinit stops the services and kills what is left, then `/usr/lib/dinit/shutdown-hook`
 runs `/etc/rc.shutdown`, saves the random seed and the clock, writes wtmp, unmounts and closes LVM
