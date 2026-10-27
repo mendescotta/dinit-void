@@ -1,0 +1,26 @@
+name: Shell syntax
+on: [push, pull_request]
+permissions:
+  contents: read
+jobs:
+  bash-syntax:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+      - name: Parse shell scripts
+        shell: bash
+        run: |
+          mapfile -d '' scripts < <(find . \
+            -path './.git' -prune -o \
+            -path './out' -prune -o \
+            -path './work*' -prune -o \
+            -type f \( -name '*.sh' -o -name 'build.sh' \) -print0)
+          if ((${#scripts[@]})); then
+            for script in "${scripts[@]}"; do
+              bash -n "$script"
+            done
+          else
+            echo 'No shell scripts found; nothing to parse.'
+          fi
